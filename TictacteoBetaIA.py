@@ -1,101 +1,225 @@
-# Tictacteo
+# TictacteoBetaIA
 
-print("Bonjour et bienvenue aux joueurs Galactiens !\n")           # to start and say hello to players
+print("Bonjour et bienvenue aux joueurs Galactiens !\n")
 
-playerO = input("Qui sera le joueur O  ? ")                        # to know who's gonna be the player X so i put unput
-print(playerO + " sera le joueur O")                      
+playerO = input("Qui sera le joueur O  ? ")
+print(playerO + " sera le joueur O")
 
-playerX = input("Qui sera le joueur X ? ")                         # to know who's gonna be the player O so i put unput
-print(playerX + " sera le joueur X")
+playerX = "IA"                                             # Ia is the player X
+print("Bienvenue à " + playerO + " et " + playerX + " !")
 
-print("Bienvenue à " + playerO + " et " + playerX + " !")          # to say hello to players 
+grid = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+largeur = 13
 
-grid = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]               # realise my grid 
-largeur = 13                                                       # i count how many - i need 
+def tabgrid():
+    nb = 0
+    print("-" * largeur)
+    for i in range(3):
+        print(f"| {grid[nb]} | {grid[nb+1]} | {grid[nb+2]} |")
+        print("-" * largeur)
+        nb += 3
 
-
-def tabgrid():                                                     # i defenied my function
-    nb = 0                                                         # to start 
-                                                                   # start the quare 
-    print("-" * largeur)                                           # first line of my square 
-    for i in range(3):                                             # i start with a for here cause i know how mane case i need
-        print(f"| {grid[nb]} | {grid[nb+1]} | {grid[nb+2]} |")     # defeny the the middle square 
-        print("-" * largeur)                                       # the end of the square 
-        nb += 3                                                    # its to add +3 at each line 
-
-tabgrid()                                                          # i call my fonction
+tabgrid()
 
 def Victory():
-    # Line
+    # Ligne
     if grid[0] == grid[1] == grid[2]:
-        return f"Bravo {playerO if grid[0]=='O' else playerX} ! Tu as gagné!"
+        return grid[0]
     if grid[3] == grid[4] == grid[5]:
-        return f"Bravo {playerO if grid[3]=='O' else playerX} ! Tu as gagné!"
+        return grid[3]
     if grid[6] == grid[7] == grid[8]:
-        return f"Bravo {playerO if grid[6]=='O' else playerX} ! Tu as gagné!"
-
-    # Column
+        return grid[6]
+    # Colonne
     if grid[0] == grid[3] == grid[6]:
-        return f"Bravo {playerO if grid[0]=='O' else playerX} ! Tu as gagné!"
+        return grid[0]
     if grid[1] == grid[4] == grid[7]:
-        return f"Bravo {playerO if grid[1]=='O' else playerX} ! Tu as gagné!"
+        return grid[1]
     if grid[2] == grid[5] == grid[8]:
-        return f"Bravo {playerO if grid[2]=='O' else playerX} ! Tu as gagné!"
-
-    # Diagonals
+        return grid[2]
+    # Diagonales
     if grid[0] == grid[4] == grid[8]:
-        return f"Bravo {playerO if grid[0]=='O' else playerX} ! Tu as gagné!"
+        return grid[0]
     if grid[2] == grid[4] == grid[6]:
-        return f"Bravo {playerO if grid[2]=='O' else playerX} ! Tu as gagné!"
+        return grid[2]
+    return None
 
-    return None                                                                              
+                                                           
+def Minimax(sim_grid, player):                              # defeny my fonction 
+    winner = None
+                                                             # Veryfy all the possibility of wining
+    if sim_grid[0] == sim_grid[1] == sim_grid[2]:
+        winner = sim_grid[0]
+    elif sim_grid[3] == sim_grid[4] == sim_grid[5]:
+        winner = sim_grid[3]
+    elif sim_grid[6] == sim_grid[7] == sim_grid[8]:
+        winner = sim_grid[6]
+    elif sim_grid[0] == sim_grid[3] == sim_grid[6]:
+        winner = sim_grid[0]
+    elif sim_grid[1] == sim_grid[4] == sim_grid[7]:
+        winner = sim_grid[1]
+    elif sim_grid[2] == sim_grid[5] == sim_grid[8]:
+        winner = sim_grid[2]
+    elif sim_grid[0] == sim_grid[4] == sim_grid[8]:
+        winner = sim_grid[0]
+    elif sim_grid[2] == sim_grid[4] == sim_grid[6]:
+        winner = sim_grid[2]
+                                                            # add a new conditon
+    if winner == "X":                                       # if the winner is "X"  
+        return 1                                            # its IA wining 
+    elif winner == "O":                                     # else the winner is "O"
+        return -1                                           # the winer is playerO
+    elif all(cell in ["O", "X"] for cell in sim_grid):      # verify for each case in each line if there is O or X
+        return 0                                            # is the case is full = nul
+
+    scores = []                                             # creat a new var to stock the result 
+    for i in range(9):                                      # check from 0 to 8 
+        if sim_grid[i] not in ["O", "X"]:                   # check if is o or x or emtpy
+            temp = sim_grid[i]                              # if is empty it simulate simgrid
+            sim_grid[i] = player                            # simulate what player could play
+            next_player = "O" if player == "X" else "X"     # 
+            score = Minimax(sim_grid, next_player)          #
+            scores.append(score)                            # stock le score optenue 
+            sim_grid[i] = temp                              # cancel the fake playe 
+
+    if player == "X":                                       # who's playing 
+        return max(scores)                                  # Ia want to maximix the chance to win the simuaton below(fonction)
+    else:                                                   # else
+        return min(scores)                                  # think that player X want to minimise the score of the IA
+
+                                                            # i start a new fonction for iA for choosing the best way to play that i can call this fonction when ia play
+def IA_play():                                              # 
+    best_score = -float('inf')                              # this is to start, to compare the possibleresult so i creat a variable  = to give a minimal start
+    move = None                                             #  create a var move = nothing, to keep the best possibilyty inside this var
+    for i in range(9):                                      # from 0 to 8 ( check if the grid is free and play minimax)
+        if grid[i] not in ["O", "X"]:                       # 1 this part is to simulate if there is not a O or X to play
+            grid[i] = "X"                                   # 1 t
+            score = Minimax(grid, "O")                      # here say's that in the simutaion O havee been pl1
+            grid[i] = str(i+1)                              #
+            if score > best_score:                          #
+                best_score = score                          #
+                move = i                                    #
+    grid[move] = "X"                                        #
 
 
-# starting counting truns
+turn = 0
 
-turn = 0                                                           # stratingt my count 
+while turn < 9:
 
-while turn < 9:                                                    # while we didnt do 9 loop
-
-    if turn % 2 == 0:                                              # determinate who's gonna play even and odd
-        currentplayer = playerO                                    # if the turn is even (0, 2, 4…), it's t playerO who play
-        symbole = "O"                                              # determinate what symbole's gonna have  the player
-    else:                                                          # else if the turn is odd(1,3,5..), it's playerX
-        currentplayer = playerX                                    # determinate what symbol's goonna have the player
+    if turn % 2 == 0:
+        currentplayer = playerO
+        symbole = "O"
+    else:
+        currentplayer = playerX
         symbole = "X"
 
-    print(f"C'est le tour de {currentplayer} ({symbole})")         # print who has to play with the symbol
-    
-    input_casee = input("Sur quelle case voulez-vous poser le symbole ? ")
+    print(f"C'est le tour de {currentplayer} ({symbole})")
 
-    input_square_int = int(input_casee)                             # that transform a str to a int
-    grid_index = input_square_int - 1    
-    
-    if grid[grid_index] in ["O", "X"]:                              # Verify in the grid if there is already a symbol
-       print("Cette case est déjà occupée, choisis-en une autre !") # print error
-       continue                                                     # else continue to play
+    if currentplayer == playerO:
+        input_casee = input("Sur quelle case voulez-vous poser le symbole ? ")
+        grid_index = int(input_casee) - 1
 
-    
-    
-                                                                    # the player chosse a number bettween 1 to 9, grid - 1 cause 
-    grid[grid_index] = symbole                                      # upgraded the grid, change the number to the symbol.
+        if grid[grid_index] in ["O", "X"]:
+            print("Cette case est déjà occupée, choisis-en une autre !")
+            continue
 
-    tabgrid()  
-    
-    result = Victory()                                              # Verify if the a winner
+        grid[grid_index] = symbole
+    else:
+        IA_play()                                                # call my fonction
+
+    tabgrid()
+
+    result = Victory()
     if result:
-        print(result)
+        if result == "O":
+            print(f"Bravo {playerO} ! Tu as gagné !")
+        else:
+            print(f"Bravo {playerX} ! Tu as gagné !")
         break
-    if turn == 8:                                                   # condition to add 'match nul'
+
+    if turn == 8:
         print("Match NUL")
         break
 
+    turn += 1
+
+print("Fin de la partie !")
+
+
+#f rancais 
+# speudo code difficulté ia 
+
+
+""""
+#  demander au joueur le niveau de difficulté
+
+afficher "Choisissez le niveau de difficulté de l'IA :"           #Affiche à l’écran une invite pour 
+afficher "1 - Facile"                                             #prévenir l’utilisateur qu’il doit choisir un niveau.
+afficher "2 - Moyen"                                              #trois options disponibles
+afficher "3 - Difficile"
+
+lire choix_joueur                                                 # lis ce que le joueur ecrit donc doit etre stocker dans une var
+
+si choix_joueur == "1" alors                                      #condition en if 
+    difficulté ← "facile"
+sinon si choix_joueur == "2" alors
+    difficulté ← "moyen"
+sinon
+    difficulté ← "difficile"
+
+afficher "Vous avez choisi le niveau :", difficulté               # mon print
+
+
+# adapter le comportement du Minimax
+
+
+fonction Minimax_Difficulté(grille_simulée, joueur, reflexion_de_difficulé)  # une fonction qui prends 3 parametres
     
-
-    turn = turn + 1                                                 # go up to start tto count the turn
-
-print("Fin de la partie !")                                         
-
+                                                                             
+    si victoire_detectée(grille_simulée) alors                               # Vérifier s’il y a un gagnant comme ma fonction victory()
+                                                                             
+        retourner score_selon_vainqueur
+    
+   
+    si toutes_cases_remplies(grille_simulée) alors                            # Si la grille est pleine → match nul
+        retourner 0
 
     
-     
+    si difficulté == "facile" ET reflexion_de_difficulté >= 1 alors          # Limiter la profondeur selon la difficulté choisie
+        retourner 0                                                          # IA ne réfléchit qu’un coup à l’avance
+    si difficulté == "moyen" ET reflexion_de_difficulté >= 3 alors
+        retourner 0                                                          # IA réfléchit trois coups à l’avance
+                                                                             # difficulté "difficile" = pas de limite de profondeur
+
+                                                                              # Explorer les coups possibles
+    pour chaque case vide dans grille_simulée faire
+       placer le symbole du joueur dans la case
+        changer de joueur (O ↔ X)
+        score ← Minimax_Difficulté(grille_simulée, nouveau_joueur, reflexion_de_difficukté + 1)
+        annuler le coup simulé
+        enregistrer le score obtenu
+
+                                                                               # Sélectionner le meilleur score selon le joueur
+    si joueur == "X" alors
+        retourner le score maximal
+    sinon
+        retourner le score minimal
+fin fonction
+
+
+
+
+fonction IA_Joue()
+    meilleur_score ← -infini
+    meilleur_coup ← aucune_case
+
+    pour chaque case vide dans la grille faire
+        placer "X" dans la case
+        score ← Minimax_Difficulté(grille, "O", reflexion_de_difficukté = 0)
+        annuler le coup simulé
+        si score > meilleur_score alors
+            meilleur_score ← score
+            meilleur_coup ← cette_case
+
+    placer "X" dans meilleur_coup
+arreter la fonction
+"""
