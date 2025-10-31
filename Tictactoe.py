@@ -1,4 +1,4 @@
-# Tictacteo
+# Tictacteo #12539 gagnat 1er jouer
 
 print("Bonjour et bienvenue aux joueurs Galactiens !\n")           # to start and say hello to players
 
@@ -9,11 +9,9 @@ playerX = input("Qui sera le joueur X ? ")                         # to know who
 print(playerX + " sera le joueur X")
 
 print("Bienvenue à " + playerO + " et " + playerX + " !")          # to say hello to players 
-
-grid = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]               # realise my grid 
+# === VARIABLES===
 largeur = 13                                                       # i count how many - i need 
-
-
+# === FONCTION ===
 def tabgrid():                                                     # i defenied my function
     nb = 0                                                         # to start 
                                                                    # start the quare 
@@ -22,9 +20,7 @@ def tabgrid():                                                     # i defenied 
         print(f"| {grid[nb]} | {grid[nb+1]} | {grid[nb+2]} |")     # defeny the the middle square 
         print("-" * largeur)                                       # the end of the square 
         nb += 3                                                    # its to add +3 at each line 
-
-tabgrid()                                                          # i call my fonction
-
+# === FONCTION ==
 def Victory():
     # Line
     if grid[0] == grid[1] == grid[2]:
@@ -49,53 +45,61 @@ def Victory():
         return f"Bravo {playerO if grid[2]=='O' else playerX} ! Tu as gagné!"
 
     return None                                                                              
+# === FONCTIONS ===
+def turn():                                                        # définition correcte de la fonction
+    global grid                                                     # pour pouvoir modifier la grille
+    turn_count = 0                                                  # compteur de tours
 
+    while turn_count < 9:                                           # tant qu’on n’a pas joué 9 fois
+        if turn_count % 2 == 0:                                     # pair → joueur O
+            currentplayer = playerO
+            symbole = "O"
+        else:                                                       # impair → joueur X
+            currentplayer = playerX
+            symbole = "X"
 
-# starting counting truns
+        print(f"C'est le tour de {currentplayer} ({symbole})")
+        input_casee = input("Sur quelle case voulez-vous poser le symbole ? ")
 
-turn = 0                                                           # stratingt my count 
+        # vérification d’entrée
+        if not input_casee.isdigit() or int(input_casee) not in range(1, 10):
+            print("Entrée invalide, choisis un chiffre entre 1 et 9 !")
+            continue
 
-while turn < 9:                                                    # while we didnt do 9 loop
+        input_square_int = int(input_casee)
+        grid_index = input_square_int - 1
 
-    if turn % 2 == 0:                                              # determinate who's gonna play even and odd
-        currentplayer = playerO                                    # if the turn is even (0, 2, 4…), it's t playerO who play
-        symbole = "O"                                              # determinate what symbole's gonna have  the player
-    else:                                                          # else if the turn is odd(1,3,5..), it's playerX
-        currentplayer = playerX                                    # determinate what symbol's goonna have the player
-        symbole = "X"
+        if grid[grid_index] in ["O", "X"]:
+            print("Cette case est déjà occupée, choisis-en une autre !")
+            continue
 
-    print(f"C'est le tour de {currentplayer} ({symbole})")         # print who has to play with the symbol
-    
-    input_casee = input("Sur quelle case voulez-vous poser le symbole ? ")
+        grid[grid_index] = symbole
+        tabgrid()
 
-    input_square_int = int(input_casee)                             # that transform a str to a int
-    grid_index = input_square_int - 1    
-    
-    if grid[grid_index] in ["O", "X"]:                              # Verify in the grid if there is already a symbol
-       print("Cette case est déjà occupée, choisis-en une autre !") # print error
-       continue                                                     # else continue to play
+        result = Victory()
+        if result:
+            print(result)
+            break
 
-    
-    
-                                                                    # the player chosse a number bettween 1 to 9, grid - 1 cause 
-    grid[grid_index] = symbole                                      # upgraded the grid, change the number to the symbol.
+        if turn_count == 8:
+            print("Match NUL")
+            break
+
+        turn_count += 1                                             # on passe au tour suivant
 
     tabgrid()  
-    
-    result = Victory()                                              # Verify if the a winner
-    if result:
-        print(result)
-        break
-    if turn == 8:                                                   # condition to add 'match nul'
-        print("Match NUL")
-        break
 
-    
-
-    turn = turn + 1                                                 # go up to start tto count the turn
+# === START GAME LOOP ===
+while True:
+    grid = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]            # realise new grid to change the older
+    tabgrid()                                                       # i call my fonction
+    turn()                                                          # start the game
+    replay = input("Voulez-vous rejouer ? (o/n) ").lower()          # ask if players want to play again
+    if replay != "o":
+        print("Merci d'avoir joué ! À bientôt !")
+        break
 
 print("Fin de la partie !")                                         
 
-
-    
-     
+# while dans une fonctoionn trop grande ok c'est bon regait comme demandé par valentin
+# #variable globa ou import --- ensuite declaration fonction --- ensuite le code sauvage je pense que OK
